@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agents: a beginner lesson</title>
+<style>
+:root{--bg:#f4f6f8;--panel:#ffffff;--ink:#14213d;--muted:#52607a;--line:#d5dce6;--accent:#0b7f86;--accent2:#c77d0a;--tint:#e3f1f2;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1726;--panel:#172236;--ink:#e8edf6;--muted:#a3b0c7;--line:#2c3b57;--accent:#4cc3c9;--accent2:#f0b24a;--tint:#173044;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;line-height:1.5;display:flex;flex-direction:column}
+main{flex:1;min-height:0;position:relative}
+.slide{display:none;height:100%;overflow-y:auto;padding:clamp(20px,5vw,64px) clamp(20px,7vw,96px) 24px;max-width:1100px;margin:0 auto}
+.slide.active{display:flex;flex-direction:column}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:700;line-height:1.15;margin:0 0 .5em}
+h1{font-size:clamp(2rem,6vw,3.6rem);max-width:16ch}
+h2{font-size:clamp(1.6rem,4vw,2.5rem)}
+p,li{font-size:clamp(1rem,2vw,1.2rem);max-width:62ch}
+ul{padding-left:1.1em;margin:.3em 0}
+li{margin:.45em 0}
+.lead{color:var(--muted);font-size:clamp(1.05rem,2.3vw,1.35rem)}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:12px 0}
+.split{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.box h3{margin:0 0 6px;font-size:1.15rem;color:var(--accent)}
+.box p,.box li{font-size:1rem}
+.box.hi{border-color:var(--accent);background:var(--tint)}
+.note{border-left:4px solid var(--accent2);padding:4px 14px;margin-top:14px;color:var(--muted)}
+table{border-collapse:collapse;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-size:1rem;vertical-align:top}
+th{background:var(--tint);color:var(--ink)}
+tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+svg{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+.src{margin-top:auto;padding-top:18px;font-size:.9rem;color:var(--muted)}
+.src code{background:var(--tint);color:var(--ink);padding:1px 6px;border-radius:4px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(16px,4vw,40px);border-top:1px solid var(--line);background:var(--panel)}
+nav button{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 18px;cursor:pointer}
+nav button:hover:not(:disabled){border-color:var(--accent)}
+nav button:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+#fill{height:100%;width:0;background:var(--accent);transition:width .25s}
+#count{font-size:.95rem;color:var(--muted);min-width:3.5em;text-align:right}
+@media (max-width:760px){.cols,.split{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){#fill{transition:none}}
+</style>
+</head>
+<body>
+<main id="deck">
+
+<section class="slide active" aria-label="Slide 1">
+<h1>AI Agents: what they are and how they work</h1>
+<p class="lead">A beginner lesson. Use the arrow keys or the buttons below to move through 7 short slides.</p>
+<p>Everything here comes from a small wiki built from five sources, and each slide names the wiki page behind it.</p>
+<p class="src">Wiki page: <code>wiki/index.md</code><br>Sources: 01 Wikipedia (AI agent) · 02 Anthropic (Building effective agents) · 03 IBM (What are AI agents?) · 04 Google Cloud (What is an AI agent?) · 05 Claude Docs (Tool use)</p>
+</section>
+
+<section class="slide" aria-label="Slide 2">
+<h2>What is an AI agent?</h2>
+<ul>
+<li>An AI agent is a program that works toward a goal, uses tools, and acts with some independence.</li>
+<li>Usually a large language model (LLM) decides what to do next.</li>
+<li>Experts do not agree on one exact definition.</li>
+</ul>
+<div class="scroll"><table>
+<tr><th></th><th>Bot</th><th>Assistant</th><th>Agent</th></tr>
+<tr><td>How it works</td><td>Follows fixed rules</td><td>Answers your requests; you decide</td><td>Pursues a goal on its own, proactively</td></tr>
+<tr><td>Autonomy</td><td>Lowest</td><td>Medium</td><td>Highest</td></tr>
+</table></div>
+<p class="note">Example: you ask for a trip to be booked, and the agent handles the steps.</p>
+<p class="src">Wiki page: <code>wiki/what-is-an-ai-agent.md</code> · Sources: 01, 03, 04</p>
+</section>
+
+<section class="slide" aria-label="Slide 3">
+<h2>Agent, workflow or chatbot?</h2>
+<div class="cols">
+<div class="box"><h3>Chatbot without tools</h3><p>No tools, memory or reasoning, so it needs your input at every turn.</p></div>
+<div class="box"><h3>Workflow</h3><p>The developer fixes the steps in code. Predictable and consistent for well-defined tasks.</p></div>
+<div class="box hi"><h3>Agent</h3><p>The model chooses its own steps and tools. Better when the task needs flexibility.</p></div>
+</div>
+<p class="note">Start with the simplest option that works. Agents often trade speed and cost for better results, and one model call with good examples is often enough.</p>
+<p class="src">Wiki page: <code>wiki/agent-vs-workflow.md</code> · Sources: 02, 03</p>
+</section>
+
+<section class="slide" aria-label="Slide 4">
+<h2>The agent loop</h2>
+<div class="split">
+<div>
+<ul>
+<li>An agent works in a cycle: plan, act with a tool, look at the result, then decide whether to continue.</li>
+<li>Each step should use real results, such as tool output, to judge progress.</li>
+<li>Limits keep it safe: a maximum number of rounds, and pauses for human feedback.</li>
+<li>The ReAct style repeats Think, Act, Observe.</li>
+</ul>
+</div>
+<svg viewBox="0 0 320 320" role="img" aria-label="Cycle: plan, act with a tool, observe the result, check goal or limit, then back to plan">
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--accent)"/></marker></defs>
+<g fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ar)">
+<path d="M190 52 Q268 70 268 128"/><path d="M268 190 Q268 250 200 268"/><path d="M120 268 Q52 250 52 190"/><path d="M52 128 Q52 70 130 52"/>
+</g>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="14" text-anchor="middle" fill="var(--ink)">
+<rect x="110" y="26" width="100" height="42" rx="8" fill="var(--tint)" stroke="var(--accent)"/><text x="160" y="52">Plan</text>
+<rect x="218" y="130" width="90" height="56" rx="8" fill="var(--tint)" stroke="var(--accent)"/><text x="263" y="154">Act with</text><text x="263" y="172">a tool</text>
+<rect x="100" y="252" width="120" height="42" rx="8" fill="var(--tint)" stroke="var(--accent)"/><text x="160" y="278">Observe result</text>
+<rect x="12" y="130" width="90" height="56" rx="8" fill="var(--panel)" stroke="var(--accent2)" stroke-width="2"/><text x="57" y="150">Goal met</text><text x="57" y="168">or limit?</text>
+</g></svg>
+</div>
+<p class="src">Wiki page: <code>wiki/agent-loop.md</code> · Sources: 02, 03</p>
+</section>
+
+<section class="slide" aria-label="Slide 5">
+<h2>Tools, memory and planning</h2>
+<div class="cols">
+<div class="box hi"><h3>Tools</h3><p>The model asks for a tool, the program runs it, and the result goes back to the model. Tools include web search, APIs and other agents.</p></div>
+<div class="box"><h3>Memory</h3><p>Agents can store past interactions, so later answers can be more personal.</p></div>
+<div class="box"><h3>Planning</h3><p>The agent breaks a big goal into smaller subtasks. Simple tasks may not need a plan.</p></div>
+</div>
+<ul>
+<li>A tool is described to the model by a name, a description and an input format.</li>
+<li>The software layer that manages prompts, tools, memory and permissions is called an agent harness.</li>
+</ul>
+<p class="src">Wiki pages: <code>wiki/tools.md</code>, <code>wiki/memory-and-planning.md</code> · Sources: 01, 03, 05</p>
+</section>
+
+<section class="slide" aria-label="Slide 6">
+<h2>Examples</h2>
+<p>Coding and customer support are strong fits, because success is easy to measure and the agent can learn from feedback.</p>
+<div class="scroll"><table>
+<tr><th>Agent type</th><th>Everyday example</th></tr>
+<tr><td>Simple reflex</td><td>A thermostat that turns on the heating at a set time</td></tr>
+<tr><td>Model-based reflex</td><td>A robot vacuum that remembers what it has cleaned</td></tr>
+<tr><td>Goal-based</td><td>A navigation app that finds the fastest route</td></tr>
+<tr><td>Utility-based</td><td>A route balancing fuel, time and tolls</td></tr>
+<tr><td>Learning</td><td>Product recommendations that improve over time</td></tr>
+</table></div>
+<p class="src">Wiki page: <code>wiki/examples.md</code> · Sources: 01, 02, 03</p>
+</section>
+
+<section class="slide" aria-label="Slide 7">
+<h2>Risks, safeguards and summary</h2>
+<div class="cols" style="grid-template-columns:repeat(2,1fr)">
+<div class="box"><h3>What can go wrong</h3><ul>
+<li>Higher cost and mistakes that pile up</li>
+<li>Endless loops when the agent cannot plan well</li>
+<li>In one test, no agent finished most of its tasks</li>
+<li>A coding agent deleted a production database</li></ul></div>
+<div class="box hi"><h3>Safeguards</h3><ul>
+<li>Test in sandboxes with guardrails</li>
+<li>Keep activity logs</li>
+<li>Allow humans to interrupt</li>
+<li>Get human approval before high-impact actions</li></ul></div>
+</div>
+<p class="note">In short: an agent is a model that uses tools in a loop to reach a goal. Choose the simplest design that does the job.</p>
+<p class="src">Wiki page: <code>wiki/risks-and-limits.md</code> · Sources: 01, 02, 03</p>
+</section>
+
+</main>
+<nav>
+<button id="prev" type="button">Previous</button>
+<div id="bar" aria-hidden="true"><div id="fill"></div></div>
+<span id="count" aria-live="polite">1 / 7</span>
+<button id="next" type="button">Next</button>
+</nav>
+<script>
+(function(){
+var s=document.querySelectorAll('.slide'),i=0,p=document.getElementById('prev'),n=document.getElementById('next');
+function show(k){
+i=Math.max(0,Math.min(s.length-1,k));
+for(var j=0;j<s.length;j++)s[j].classList.toggle('active',j===i);
+s[i].scrollTop=0;
+document.getElementById('count').textContent=(i+1)+' / '+s.length;
+document.getElementById('fill').style.width=((i+1)/s.length*100)+'%';
+p.disabled=i===0;n.disabled=i===s.length-1;
+}
+p.onclick=function(){show(i-1)};n.onclick=function(){show(i+1)};
+document.addEventListener('keydown',function(e){
+if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();show(i+1)}
+else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1)}
+else if(e.key==='Home')show(0);else if(e.key==='End')show(s.length-1);
+});
+show(0);
+})();
+</script>
+</body>
+</html>
